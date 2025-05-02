@@ -1,6 +1,8 @@
 ﻿using LuminaryEngine.Engine.Audio;
 using LuminaryEngine.Engine.Core.Rendering.Fonts;
+using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.Core.Rendering.Textures;
+using Newtonsoft.Json;
 using SDL2;
 
 namespace LuminaryEngine.Engine.Core.ResourceManagement;
@@ -14,6 +16,7 @@ public class ResourceCache
     private Dictionary<string, Texture> _spritesheetCache;
     private Dictionary<string, Font> _fontCache;
     private Dictionary<string, Sound> _soundCache;
+    private Dictionary<string, AnimationResponse> _animationCache;
     private AudioManager _audioManager;
 
     private TextureLoadingSystem _textureLoadingSystem;
@@ -30,6 +33,7 @@ public class ResourceCache
         _fontCache = new Dictionary<string, Font>();
         _audioManager = audioManager;
         _soundCache = new Dictionary<string, Sound>();
+        _animationCache = new Dictionary<string, AnimationResponse>();
     }
 
     public Font GetFont(string fontId, int fontSize)
@@ -100,6 +104,37 @@ public class ResourceCache
 
         return null;
     }
+    
+    public AnimationResponse GetAnimation(string animationId)
+    {
+        if (_animationCache.TryGetValue(animationId, out AnimationResponse animationResponse))
+        {
+            return animationResponse;
+        }
+
+        string animationPath = Path.Combine("Assets", "Animations", $"{animationId}.json");
+
+        List<Animation> animations = new List<Animation>();
+        
+        // Load the animation data from the JSON file
+        string jsonData = File.ReadAllText(animationPath);
+        var animationData = JsonConvert.DeserializeObject<List<JSONAnimation>>(jsonData);
+        foreach (var anim in animationData)
+        {
+            Animation animation = new Animation(anim);
+            animations.Add(animation);
+        }
+
+        animationResponse = new AnimationResponse
+        {
+            TextureId = $"{animationId}.png",
+            Animations = animations
+        };
+
+        _animationCache[animationId] = animationResponse;
+
+        return animationResponse;
+    }
 
     public void ClearCache()
     {
@@ -123,5 +158,13 @@ public class ResourceCache
         }
 
         _soundCache.Clear();
+        
+        _animationCache.Clear();
     }
+}
+
+public struct AnimationResponse
+{
+    public string TextureId;
+    public List<Animation> Animations;
 }

@@ -16,4 +16,16 @@ public class Animation
         FrameDuration = frameDuration;
         IsLooping = isLooping;
     }
+    
+    public Animation(JSONAnimation jsonAnimation) 
+    {
+        Name = jsonAnimation.Name;
+        Frames = new List<SDL.SDL_Rect>();
+        foreach (var frame in jsonAnimation.Frames)
+        {
+            Frames.Add(new SDL.SDL_Rect { x = frame.X, y = frame.Y, w = frame.W, h = frame.H });
+        }
+        FrameDuration = jsonAnimation.FrameDuration;
+        IsLooping = jsonAnimation.IsLooping;
+    }
 }
