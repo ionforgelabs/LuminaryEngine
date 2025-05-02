@@ -247,12 +247,6 @@ public class Game
                     }
                 }
 
-                if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_0)
-                {
-                    _world.GetEntitiesWithComponents(typeof(PlayerComponent))[0].GetComponent<InventoryComponent>()
-                        .AddItem("basic_item");
-                }
-
                 if (e.key.keysym.scancode == SDL_Scancode.SDL_SCANCODE_1)
                 {
                     LuminLog.Debug("Inventory:");

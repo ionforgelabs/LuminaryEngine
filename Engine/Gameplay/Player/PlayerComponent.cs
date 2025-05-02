@@ -68,7 +68,7 @@ public class PlayerComponent : IComponent
                                             {
                                                 _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
                                                     .GetComponent<InventoryComponent>()
-                                                    .AddSpiritEssence(data.ItemId, data.ItemAmount);
+                                                    .AddSpiritEssence(new SpiritEssence() { EssenceID = data.ItemId, PropertyMultipliers = data.ItemStats }, data.ItemAmount);
                                                 
                                                 SpiritEssence e = SpiritEssenceManager.Instance.GetSpiritEssence(data.ItemId);
                                                 
@@ -99,7 +99,7 @@ public class PlayerComponent : IComponent
                                             {
                                                 _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
                                                     .GetComponent<InventoryComponent>()
-                                                    .AddItem(data.ItemId, data.ItemAmount);
+                                                    .AddItem(new Item() { ItemId = data.ItemId, Flags = data.ItemFlags, Stats = data.ItemStats }, data.ItemAmount);
                                                 
                                                 Item i = ItemManager.Instance.GetItem(data.ItemId);
                                                 
@@ -141,7 +141,7 @@ public class PlayerComponent : IComponent
                                             {
                                                 _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
                                                     .GetComponent<InventoryComponent>()
-                                                    .AddSpiritEssence(data.ItemId, data.ItemAmount);
+                                                    .AddSpiritEssence(new SpiritEssence() { EssenceID = data.ItemId, PropertyMultipliers = data.ItemStats }, data.ItemAmount);
                                                 
                                                 SpiritEssence e = SpiritEssenceManager.Instance.GetSpiritEssence(data.ItemId);
                                                 
@@ -172,7 +172,7 @@ public class PlayerComponent : IComponent
                                             {
                                                 _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
                                                     .GetComponent<InventoryComponent>()
-                                                    .AddItem(data.ItemId, data.ItemAmount);
+                                                    .AddItem(new Item() { ItemId = data.ItemId, Flags = data.ItemFlags, Stats = data.ItemStats }, data.ItemAmount);
                                                 
                                                 Item i = ItemManager.Instance.GetItem(data.ItemId);
                                                 

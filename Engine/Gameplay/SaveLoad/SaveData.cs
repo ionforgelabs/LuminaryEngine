@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
 using LuminaryEngine.Engine.Core.Input;
+using LuminaryEngine.Engine.Gameplay.Items;
+using LuminaryEngine.Engine.Gameplay.Spirits;
 using LuminaryEngine.Extras;
 
 namespace LuminaryEngine.Engine.Gameplay.SaveLoad;
@@ -17,8 +19,8 @@ public class SaveData
     public Direction PlayerFacingDirection { get; set; }
 
     // Inventory-related data
-    public Dictionary<string, int> InventoryItems { get; set; }
-    public Dictionary<string, int> SpiritEssences { get; set; }
+    public Dictionary<Item, int> InventoryItems { get; set; }
+    public Dictionary<SpiritEssence, int> SpiritEssences { get; set; }
 
     // Map Data
     public int CurrentMap { get; set; }
@@ -30,7 +32,8 @@ public class SaveData
     public SaveData()
     {
         SaveTimestamp = DateTime.Now;
-        InventoryItems = new Dictionary<string, int>();
+        InventoryItems = new Dictionary<Item, int>();
+        SpiritEssences = new Dictionary<SpiritEssence, int>();
     }
 
     public void SavePosition(Vector2 position)

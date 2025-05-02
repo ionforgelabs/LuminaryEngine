@@ -10,4 +10,18 @@ public class SpiritEssence
     public SpiritTier Tier { get; set; } // Optional
 
     public Dictionary<string, float> PropertyMultipliers { get; set; } // How much it affects stats
+    
+    public SpiritEssence Clone() 
+    {
+        return new SpiritEssence
+        {
+            EssenceID = EssenceID,
+            Name = Name,
+            Description = Description,
+            TextureId = TextureId,
+            Type = Type,
+            Tier = Tier,
+            PropertyMultipliers = new Dictionary<string, float>(PropertyMultipliers)
+        };
+    }
 }

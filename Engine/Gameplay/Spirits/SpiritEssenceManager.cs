@@ -42,6 +42,8 @@ public class SpiritEssenceManager
 
         return null;
     }
+    
+    
 
     public void LoadSpiritEssence()
     {

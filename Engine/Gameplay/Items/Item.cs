@@ -1,4 +1,4 @@
-namespace LuminaryEngine.Engine.Gameplay.Items;
+﻿namespace LuminaryEngine.Engine.Gameplay.Items;
 
 public class Item
 {
@@ -11,4 +11,20 @@ public class Item
     
     // Assigned Data
     public ItemFlags Flags { get; set; }
+    public Dictionary<string, float> Stats { get; set; }
+    
+    public Item Clone() 
+    {
+        return new Item
+        {
+            Name = Name,
+            Description = Description,
+            TextureId = TextureId,
+            IsEquipped = IsEquipped,
+            ItemId = ItemId,
+            Type = Type,
+            Flags = Flags,
+            Stats = new Dictionary<string, float>(Stats)
+        };
+    }
 }

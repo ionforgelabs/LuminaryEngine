@@ -1,78 +1,92 @@
 ﻿using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.ECS;
+using LuminaryEngine.Engine.Gameplay.Items;
+using LuminaryEngine.Engine.Gameplay.Spirits;
 
 namespace LuminaryEngine.Engine.Gameplay.Player;
 
 public class InventoryComponent : IComponent
 {
-    private readonly Dictionary<string, int> _items = new Dictionary<string, int>();
-    private readonly Dictionary<string, int> _spiritEssences = new Dictionary<string, int>();
+    private readonly Dictionary<Item, int> _items = new Dictionary<Item, int>();
+    private readonly Dictionary<SpiritEssence, int> _spiritEssences = new Dictionary<SpiritEssence, int>();
 
     public int Capacity { get; set; } = 30; // Default inventory capacity
     public int UsedSlots => _items.Count;
     public int RemainingSlots => Capacity - UsedSlots;
 
     // Item Management
-    public void AddItem(string itemID, int quantity = 1)
+    public void AddItem(Item item, int quantity = 1)
     {
         if (quantity <= 0)
         {
             return;
         }
 
-        if (_items.ContainsKey(itemID))
+        if (_items.ContainsKey(item))
         {
-            _items[itemID] += quantity;
+            _items[item] += quantity;
         }
         else if (UsedSlots < Capacity)
         {
-            _items.Add(itemID, quantity);
+            _items.Add(item, quantity);
         }
         else
         {
-            LuminLog.Warning($"Inventory is full, cannot add item: {itemID}");
+            LuminLog.Warning($"Inventory is full, cannot add item: {item.ItemId}");
         }
     }
 
-    public bool RemoveItem(string itemID, int quantity = 1)
+    public bool RemoveItem(Item item, int quantity = 1)
     {
-        if (quantity <= 0 || !_items.ContainsKey(itemID))
+        if (quantity <= 0 || !_items.ContainsKey(item))
         {
             return false;
         }
 
-        if (_items[itemID] > quantity)
+        if (_items[item] > quantity)
         {
-            _items[itemID] -= quantity;
+            _items[item] -= quantity;
             return true;
         }
 
-        if (_items[itemID] == quantity)
+        if (_items[item] == quantity)
         {
-            _items.Remove(itemID);
+            _items.Remove(item);
             return true;
         }
 
-        LuminLog.Warning($"Attempted to remove more of item '{itemID}' than present in inventory.");
+        LuminLog.Warning($"Attempted to remove more of item '{item.ItemId}' than present in inventory.");
         return false;
     }
-
-    public bool HasItem(string itemID, int quantity = 1)
+    
+    public bool RemoveItem(string itemId, int quantity = 1)
     {
-        return _items.ContainsKey(itemID) && _items[itemID] >= quantity;
+        var item = _items.FirstOrDefault(x => x.Key.ItemId == itemId).Key;
+        return item != null && RemoveItem(item, quantity);
     }
 
-    public int GetItemCount(string itemID)
+    public bool HasItem(Item item, int quantity = 1)
     {
-        return _items.TryGetValue(itemID, out int count) ? count : 0;
+        return _items.ContainsKey(item) && _items[item] >= quantity;
+    }
+    
+    public bool HasItem(string itemId, int quantity = 1)
+    {
+        var item = ItemManager.Instance.GetItem(itemId);
+        return item != null && HasItem(item, quantity);
     }
 
-    public Dictionary<string, int> GetInventory()
+    public int GetItemCount(Item item)
     {
-        return new Dictionary<string, int>(_items); // Return a copy
+        return _items.TryGetValue(item, out int count) ? count : 0;
     }
 
-    public void SetInventory(Dictionary<string, int> items)
+    public Dictionary<Item, int> GetInventory()
+    {
+        return new Dictionary<Item, int>(_items); // Return a copy
+    }
+
+    public void SetInventory(Dictionary<Item, int> items)
     {
         _items.Clear();
         foreach (var item in items)
@@ -85,62 +99,74 @@ public class InventoryComponent : IComponent
     }
 
     // Spirit Essence Management
-    public void AddSpiritEssence(string essenceID, int quantity = 1)
+    public void AddSpiritEssence(SpiritEssence essence, int quantity = 1)
     {
         if (quantity <= 0)
         {
             return;
         }
 
-        if (_spiritEssences.ContainsKey(essenceID))
+        if (_spiritEssences.ContainsKey(essence))
         {
-            _spiritEssences[essenceID] += quantity;
+            _spiritEssences[essence] += quantity;
         }
         else
         {
-            _spiritEssences.Add(essenceID, quantity);
+            _spiritEssences.Add(essence, quantity);
         }
     }
 
-    public bool RemoveSpiritEssence(string essenceID, int quantity = 1)
+    public bool RemoveSpiritEssence(SpiritEssence essence, int quantity = 1)
     {
-        if (quantity <= 0 || !_spiritEssences.ContainsKey(essenceID))
+        if (quantity <= 0 || !_spiritEssences.ContainsKey(essence))
         {
             return false;
         }
 
-        if (_spiritEssences[essenceID] > quantity)
+        if (_spiritEssences[essence] > quantity)
         {
-            _spiritEssences[essenceID] -= quantity;
+            _spiritEssences[essence] -= quantity;
             return true;
         }
 
-        if (_spiritEssences[essenceID] == quantity)
+        if (_spiritEssences[essence] == quantity)
         {
-            _spiritEssences.Remove(essenceID);
+            _spiritEssences.Remove(essence);
             return true;
         }
 
-        LuminLog.Warning($"Attempted to remove more of spirit essence '{essenceID}' than present in inventory.");
+        LuminLog.Warning($"Attempted to remove more of spirit essence '{essence.EssenceID}' than present in inventory.");
         return false;
     }
-
-    public bool HasSpiritEssence(string essenceID, int quantity = 1)
+    
+    public bool RemoveSpiritEssence(string essenceId, int quantity = 1)
     {
-        return _spiritEssences.ContainsKey(essenceID) && _spiritEssences[essenceID] >= quantity;
+        var essence = _spiritEssences.FirstOrDefault(x => x.Key.EssenceID == essenceId).Key;
+        return essence != null && RemoveSpiritEssence(essence, quantity);
     }
 
-    public int GetSpiritEssenceCount(string essenceID)
+    public bool HasSpiritEssence(SpiritEssence essence, int quantity = 1)
     {
-        return _spiritEssences.TryGetValue(essenceID, out int count) ? count : 0;
+        return _spiritEssences.ContainsKey(essence) && _spiritEssences[essence] >= quantity;
+    }
+    
+    public bool HasSpiritEssence(string essenceId, int quantity = 1)
+    {
+        var essence = SpiritEssenceManager.Instance.GetSpiritEssence(essenceId);
+        return essence != null && HasSpiritEssence(essence, quantity);
     }
 
-    public Dictionary<string, int> GetSpiritEssences()
+    public int GetSpiritEssenceCount(SpiritEssence essence)
     {
-        return new Dictionary<string, int>(_spiritEssences); // Return a copy
+        return _spiritEssences.TryGetValue(essence, out int count) ? count : 0;
     }
 
-    public void SetSpiritEssences(Dictionary<string, int> spiritEssences)
+    public Dictionary<SpiritEssence, int> GetSpiritEssences()
+    {
+        return new Dictionary<SpiritEssence, int>(_spiritEssences); // Return a copy
+    }
+
+    public void SetSpiritEssences(Dictionary<SpiritEssence, int> spiritEssences)
     {
         _spiritEssences.Clear();
         foreach (var essence in spiritEssences)
@@ -153,14 +179,14 @@ public class InventoryComponent : IComponent
     }
 
     // Other Inventory Operations
-    public bool CanAddItem(string itemID, int quantity = 1)
+    public bool CanAddItem(Item item, int quantity = 1)
     {
         if (quantity <= 0)
         {
             return true;
         }
 
-        if (_items.ContainsKey(itemID))
+        if (_items.ContainsKey(item))
         {
             return true; // Can always add to an existing stack (assuming no max stack size limit here)
         }

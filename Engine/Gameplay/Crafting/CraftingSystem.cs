@@ -1,4 +1,6 @@
-﻿using LuminaryEngine.Engine.Gameplay.Player;
+﻿using LuminaryEngine.Engine.Gameplay.Items;
+using LuminaryEngine.Engine.Gameplay.Player;
+using LuminaryEngine.Engine.Gameplay.Spirits;
 using Newtonsoft.Json;
 
 namespace LuminaryEngine.Engine.Gameplay.Crafting;
@@ -81,11 +83,66 @@ public class CraftingSystem
         // Add the crafted item
         if (recipe.Result.IsSpiritEssence)
         {
-            inventory.AddSpiritEssence(recipe.Result.ResultItemID, recipe.Result.Count);
+            SpiritEssence essence = SpiritEssenceManager.Instance.GetSpiritEssence(recipe.Result.ResultItemID).Clone();
+            essence.PropertyMultipliers = new Dictionary<string, float>(essence.PropertyMultipliers);
+            if (recipe.RequiredSpiritEssences.Count > 0)
+            {
+                foreach (var recipeRequiredSpiritEssence in recipe.RequiredSpiritEssences)
+                {
+                    if (essence.PropertyMultipliers.ContainsKey(recipeRequiredSpiritEssence.Key))
+                    {
+                        essence.PropertyMultipliers[recipeRequiredSpiritEssence.Key] *= recipeRequiredSpiritEssence.Value;
+                    }
+                    else
+                    {
+                        essence.PropertyMultipliers.Add(recipeRequiredSpiritEssence.Key, recipeRequiredSpiritEssence.Value);
+                    }
+                }
+            }
+            inventory.AddSpiritEssence(essence, recipe.Result.Count);
         }
         else
         {
-            inventory.AddItem(recipe.Result.ResultItemID, recipe.Result.Count);
+            Item item = ItemManager.Instance.GetItem(recipe.Result.ResultItemID).Clone();
+            if (!item.Flags.HasFlag(ItemFlags.IsCrafted))
+            {
+                item.Flags |= ItemFlags.IsCrafted;
+            }
+            item.Flags.CopyFlags((ItemFlags)recipe.Result.Flags);
+            
+            item.Stats = new Dictionary<string, float>(item.Stats);
+            
+            if (recipe.RequiredItems.Count > 0)
+            {
+                foreach (var recipeRequiredItem in recipe.RequiredItems)
+                {
+                    if (item.Stats.ContainsKey(recipeRequiredItem.Key))
+                    {
+                        item.Stats[recipeRequiredItem.Key] *= recipeRequiredItem.Value;
+                    }
+                    else
+                    {
+                        item.Stats.Add(recipeRequiredItem.Key, recipeRequiredItem.Value);
+                    }
+                }
+            }
+            
+            if (recipe.RequiredSpiritEssences.Count > 0)
+            {
+                foreach (var recipeRequiredSpiritEssence in recipe.RequiredSpiritEssences)
+                {
+                    if (item.Stats.ContainsKey(recipeRequiredSpiritEssence.Key))
+                    {
+                        item.Stats[recipeRequiredSpiritEssence.Key] *= recipeRequiredSpiritEssence.Value;
+                    }
+                    else
+                    {
+                        item.Stats.Add(recipeRequiredSpiritEssence.Key, recipeRequiredSpiritEssence.Value);
+                    }
+                }
+            }
+            
+            inventory.AddItem(item, recipe.Result.Count);
         }
 
         return true;

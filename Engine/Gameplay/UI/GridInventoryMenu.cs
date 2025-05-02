@@ -100,8 +100,7 @@ public class GridInventoryMenu : MenuSystem
                 {
                     // Create an icon for the item (placeholder image)
                     var itemIcon = new ImageComponent(
-                        _resourceCache.GetTexture(ItemManager.Instance.GetItem(item.Key)
-                            .TextureId), // Replace with actual texture path
+                        _resourceCache.GetTexture(item.Key.TextureId), // Replace with actual texture path
                         currentX, currentY, CellWidth, CellHeight, zIndex: _zIndex - 2
                     );
 
@@ -140,8 +139,7 @@ public class GridInventoryMenu : MenuSystem
                 {
                     // Create an icon for the spirit essence (placeholder image)
                     var spiritEssenceIcon = new ImageComponent(
-                        _resourceCache.GetTexture(SpiritEssenceManager.Instance.GetSpiritEssence(spiritEssence.Key)
-                            .TextureId), // Replace with actual texture path
+                        _resourceCache.GetTexture(spiritEssence.Key.TextureId), // Replace with actual texture path
                         currentX, currentY, CellWidth, CellHeight, zIndex: _zIndex - 2
                     );
 
