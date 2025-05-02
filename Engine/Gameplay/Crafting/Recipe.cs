@@ -24,4 +24,8 @@ public class RecipeResult
     public int Count { get; set; }
     [JsonProperty("isSpiritEssence")]
     public bool IsSpiritEssence { get; set; }
+    
+    // Item Only
+    [JsonProperty("flags")]
+    public int? Flags { get; set; }
 }
