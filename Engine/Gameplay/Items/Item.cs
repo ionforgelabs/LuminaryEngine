@@ -1,4 +1,4 @@
-﻿namespace LuminaryEngine.Engine.Gameplay.Items;
+namespace LuminaryEngine.Engine.Gameplay.Items;
 
 public class Item
 {
@@ -8,4 +8,7 @@ public class Item
     public bool IsEquipped { get; set; }
     public string ItemId { get; set; }
     public ItemType Type { get; set; }
+    
+    // Assigned Data
+    public ItemFlags Flags { get; set; }
 }
