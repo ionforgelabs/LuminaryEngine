@@ -1,30 +1,47 @@
-﻿using LuminaryEngine.Engine.ECS;
+﻿using LuminaryEngine.Engine.Core.Rendering;
+using LuminaryEngine.Engine.Core.Rendering.Sprites;
+using LuminaryEngine.Engine.ECS;
+using LuminaryEngine.Engine.ECS.Components;
+using LuminaryEngine.Engine.Gameplay.Player;
+using Nuke.Common.Utilities;
 
 namespace LuminaryEngine.Engine.Gameplay.Combat;
 
 public class CombatSystem : LuminSystem
 {
-    private Queue<Combatant> _turnQueue;
+    private Queue<Entity> _turnQueue;
     private CombatState _combatState;
     
     private readonly SpiritTypeSystem _spiritTypeSystem = new SpiritTypeSystem();
 
     public CombatSystem(World world) : base(world)
     {
-        _turnQueue = new Queue<Combatant>();
+        _turnQueue = new Queue<Entity>();
         _combatState = new CombatState();
     }
     
-    public void InitializeCombat(List<Combatant> combatants)
+    public void InitializeCombat(string combatId)
     {
-        _world.LoadCombatBackdrop("combat_background", combatants, CombatCallback);
+        Combat combat = CombatManager.Instance.GetCombat(combatId);
+        
+        Combatant player = _world.GetEntitiesWithComponents(typeof(TransformComponent), typeof(PlayerComponent))[0].GetComponent<CombatantComponent>().Combatant;
+        
+        _world.LoadCombatBackdrop(combat.BackgroundTextureId, new List<Combatant>(combat.Combatants) { player }, CombatCallback);
     }
 
     private void CombatCallback(List<Combatant> combatants)
     {
         foreach (var combatant in combatants)
         {
-            _combatState.AddCombatant(combatant);
+            Entity entity = _world.CreateEntity();
+            if (!combatant.TextureId.IsNullOrEmpty())
+            {
+                entity.AddComponent(new SpriteComponent(combatant.TextureId, 32));
+            }
+            entity.AddComponent(new CombatantComponent(combatant));
+            entity.AddComponent(new TransformComponent(100, 100));
+            
+            _combatState.AddCombatant(entity);
         }
         
         _combatState.IsActive = true;
@@ -42,7 +59,7 @@ public class CombatSystem : LuminSystem
 
         var currentCombatant = _turnQueue.Dequeue();
 
-        if (currentCombatant.IsPlayer)
+        if (currentCombatant.GetComponent<CombatantComponent>().Combatant.IsPlayer)
         {
             HandlePlayerTurn(currentCombatant);
         }
@@ -60,7 +77,7 @@ public class CombatSystem : LuminSystem
     private void InitializeTurnQueue()
     {
         var combatants = _combatState.GetAllCombatants();
-        var orderedCombatants = combatants.OrderByDescending(c => c.Speed).ToList();
+        var orderedCombatants = combatants.OrderByDescending(c => c.GetComponent<CombatantComponent>().Combatant.Speed).ToList();
 
         foreach (var combatant in orderedCombatants)
         {
@@ -68,7 +85,7 @@ public class CombatSystem : LuminSystem
         }
     }
 
-    private void HandlePlayerTurn(Combatant player)
+    private void HandlePlayerTurn(Entity player)
     {
         Console.WriteLine("Player's Turn! Choose an action:");
         Console.WriteLine("1. Attack");
@@ -101,54 +118,54 @@ public class CombatSystem : LuminSystem
         }
     }
 
-    private void HandleEnemyTurn(Combatant enemy)
+    private void HandleEnemyTurn(Entity enemy)
     {
-        Console.WriteLine($"{enemy.Name}'s Turn!");
+        Console.WriteLine($"{enemy.GetComponent<CombatantComponent>().Combatant.Name}'s Turn!");
         PerformAttack(enemy, _combatState.GetPlayerCombatant());
     }
 
-    private void PerformAttack(Combatant attacker, Combatant target)
+    private void PerformAttack(Entity attacker, Entity target)
     {
         var damage = CalculateDamage(attacker, target);
-        target.Health -= damage;
+        target.GetComponent<CombatantComponent>().Combatant.Health -= damage;
 
-        Console.WriteLine($"{attacker.Name} attacked {target.Name} for {damage} damage!");
+        Console.WriteLine($"{attacker.GetComponent<CombatantComponent>().Combatant.Name} attacked {target.GetComponent<CombatantComponent>().Combatant.Name} for {damage} damage!");
 
-        if (target.Health <= 0)
+        if (target.GetComponent<CombatantComponent>().Combatant.Health <= 0)
         {
-            Console.WriteLine($"{target.Name} has been defeated!");
+            Console.WriteLine($"{target.GetComponent<CombatantComponent>().Combatant.Name} has been defeated!");
             _combatState.RemoveCombatant(target);
         }
     }
 
-    private int CalculateDamage(Combatant attacker, Combatant target)
+    private int CalculateDamage(Entity attacker, Entity target)
     {
-        float typeEffectiveness = _spiritTypeSystem.GetEffectiveness(attacker.SpiritType, target.SpiritType);
-        int baseDamage = attacker.Attack - target.Defense;
+        float typeEffectiveness = _spiritTypeSystem.GetEffectiveness(attacker.GetComponent<CombatantComponent>().Combatant.SpiritType, target.GetComponent<CombatantComponent>().Combatant.SpiritType);
+        int baseDamage = attacker.GetComponent<CombatantComponent>().Combatant.Attack - target.GetComponent<CombatantComponent>().Combatant.Defense;
         return (int)(baseDamage * typeEffectiveness);
     }
 
-    private void UseSpiritAbility(Combatant combatant)
+    private void UseSpiritAbility(Entity combatant)
     {
-        Console.WriteLine($"{combatant.Name} used a Spirit Ability!");
+        Console.WriteLine($"{combatant.GetComponent<CombatantComponent>().Combatant.Name} used a Spirit Ability!");
         // Implement Spirit ability logic here
     }
 
-    private void ShiftFocus(Combatant combatant)
+    private void ShiftFocus(Entity combatant)
     {
-        Console.WriteLine($"{combatant.Name} shifted Spirit focus!");
+        Console.WriteLine($"{combatant.GetComponent<CombatantComponent>().Combatant.Name} shifted Spirit focus!");
         // Implement focus-shifting logic here
     }
 
-    private void UseItem(Combatant combatant)
+    private void UseItem(Entity combatant)
     {
-        Console.WriteLine($"{combatant.Name} used an item!");
+        Console.WriteLine($"{combatant.GetComponent<CombatantComponent>().Combatant.Name} used an item!");
         // Implement item usage logic here
     }
 
-    private void Defend(Combatant combatant)
+    private void Defend(Entity combatant)
     {
-        Console.WriteLine($"{combatant.Name} is defending!");
+        Console.WriteLine($"{combatant.GetComponent<CombatantComponent>().Combatant.Name} is defending!");
         // Implement defense logic here
     }
 

@@ -11,6 +11,9 @@ public class Camera
 
     private World _world;
 
+    private bool _lockPosition;
+    private Vector2 _lastPosition;
+
     public Camera(int initialX, int initialY, World world)
     {
         X = initialX;
@@ -21,6 +24,12 @@ public class Camera
     public void Follow(Vector2 target)
     {
         if (_world.GetCurrentLevelId() < 0) return;
+        
+        if (_lockPosition)
+        {
+            // If the camera is locked, do not update its position.
+            return;
+        }
 
         // Center the camera on the target immediately.
         Vector2 desiredPosition = target - new Vector2(Game.DISPLAY_WIDTH * 0.5f, Game.DISPLAY_HEIGHT * 0.5f);
@@ -47,9 +56,21 @@ public class Camera
         X = clampedX;
         Y = clampedY;
     }
-
-    public int HalfDifference(int a, int b)
+    
+    public void LockPosition()
     {
-        return (a - b) / 2;
+        _lockPosition = true;
+        _lastPosition = new Vector2(X, Y);
+        X = 0;
+        Y = 0;
+    }
+    
+    public void UnlockPosition()
+    {
+        _lockPosition = false;
+        X = _lastPosition.X;
+        Y = _lastPosition.Y;
+        
+        _lastPosition = Vector2.Zero;
     }
 }

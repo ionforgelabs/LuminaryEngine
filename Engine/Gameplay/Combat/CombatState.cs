@@ -1,44 +1,46 @@
-﻿namespace LuminaryEngine.Engine.Gameplay.Combat;
+﻿using LuminaryEngine.Engine.ECS;
+
+namespace LuminaryEngine.Engine.Gameplay.Combat;
 
 public class CombatState
 {
-    private List<Combatant> _combatants;
+    private List<Entity> _combatants;
 
     public bool IsActive { get; set; }
 
     public CombatState()
     {
-        _combatants = new List<Combatant>();
+        _combatants = new List<Entity>();
         IsActive = false;
     }
 
-    public void AddCombatant(Combatant combatant)
+    public void AddCombatant(Entity combatant)
     {
         _combatants.Add(combatant);
     }
 
-    public void RemoveCombatant(Combatant combatant)
+    public void RemoveCombatant(Entity combatant)
     {
         _combatants.Remove(combatant);
     }
 
-    public List<Combatant> GetAllCombatants()
+    public List<Entity> GetAllCombatants()
     {
         return _combatants;
     }
 
-    public Combatant GetPlayerCombatant()
+    public Entity GetPlayerCombatant()
     {
-        return _combatants.Find(c => c.IsPlayer);
+        return _combatants.Find(c => c.GetComponent<CombatantComponent>().Combatant.IsPlayer);
     }
 
-    public Combatant GetEnemyTarget()
+    public Entity GetEnemyTarget()
     {
-        return _combatants.Find(c => !c.IsPlayer);
+        return _combatants.Find(c => c.GetComponent<CombatantComponent>().Combatant.IsPlayer == false);
     }
 
     public bool IsBattleOver()
     {
-        return _combatants.Count == 0 || _combatants.All(c => c.IsPlayer) || _combatants.All(c => !c.IsPlayer);
+        return _combatants.Count == 0 || _combatants.All(c => c.GetComponent<CombatantComponent>().Combatant.IsPlayer) || _combatants.All(c => !c.GetComponent<CombatantComponent>().Combatant.IsPlayer);
     }
 }

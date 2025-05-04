@@ -14,6 +14,8 @@ public class PlayerMovementSystem : LuminSystem
     private Direction _direction = Direction.South;
 
     private GameTime _gameTime;
+    
+    private bool _locked = false;
 
     public PlayerMovementSystem(World world, GameTime gameTime) : base(world)
     {
@@ -28,6 +30,8 @@ public class PlayerMovementSystem : LuminSystem
 
     public override void Update()
     {
+        if (_locked) return;
+        
         foreach (var entity in
                  _world.GetEntitiesWithComponents(typeof(TransformComponent), typeof(InputStateComponent)))
         {
@@ -220,5 +224,15 @@ public class PlayerMovementSystem : LuminSystem
 
             anim.StopAnimation();
         }
+    }
+    
+    public void LockMovement()
+    {
+        _locked = true;
+    }
+    
+    public void UnlockMovement()
+    {
+        _locked = false;
     }
 }

@@ -17,6 +17,11 @@ public class DialogueBox : UIComponent
     {
         _dialogueUISystem.StartDialogue(dialogue);
     }
+    
+    public void SetDialogueWithCallback(DialogueNode dialogue, Action callback)
+    {
+        _dialogueUISystem.StartDialogue(dialogue, callback);
+    }
 
     public override void Render(Renderer renderer)
     {

@@ -20,6 +20,9 @@ public class DialogueUISystem : UIComponent
     private bool interactedDuringTyping = false;
     private bool startedType = false;
 
+    private bool hasCallback = false;
+    private Action callback;
+
     public DialogueUISystem(int x, int y, int width, int height)
         : base(x, y, width, height)
     {
@@ -52,6 +55,27 @@ public class DialogueUISystem : UIComponent
         startedType = true;
 
         IsVisible = true;
+    }
+    
+    public void StartDialogue(DialogueNode startNode, Action callback)
+    {
+        currentNode = startNode;
+        fullText = currentNode.Text;
+        displayedText = ""; // Clear displayedText to avoid flashing
+        currentCharIndex = 0;
+        timeSinceLastChar = 0f; // Reset the typewriter timer
+        isTyping = true;
+        isWaitingForInput = false;
+        interactedDuringTyping = false; // Reset interaction flag
+
+        // Reset the text component with an empty string
+        dialogueText.SetText(" ");
+        startedType = true;
+
+        IsVisible = true;
+        
+        hasCallback = true;
+        this.callback = callback;
     }
 
     private void UpdateTypewriterEffect(float deltaTime)
@@ -112,6 +136,11 @@ public class DialogueUISystem : UIComponent
                         currentNode = null;
 
                         IsVisible = false; // Hide the dialogue UI if there are no choices left to display
+                        if (hasCallback)
+                        {
+                            callback?.Invoke();
+                            hasCallback = false; // Reset the callback flag
+                        }
                     }
                 }
                 else
@@ -121,6 +150,11 @@ public class DialogueUISystem : UIComponent
                     currentNode = null;
 
                     IsVisible = false; // Hide the dialogue UI if there are no choices left to display
+                    if (hasCallback)
+                    {
+                        callback?.Invoke();
+                        hasCallback = false; // Reset the callback flag
+                    }
                 }
             }
             else
@@ -130,6 +164,11 @@ public class DialogueUISystem : UIComponent
                 currentNode = null;
 
                 IsVisible = false; // Hide the dialogue UI if there are no choices left to display
+                if (hasCallback)
+                {
+                    callback?.Invoke();
+                    hasCallback = false; // Reset the callback flag
+                }
             }
         }
         else if (isWaitingForInput && interactedDuringTyping)

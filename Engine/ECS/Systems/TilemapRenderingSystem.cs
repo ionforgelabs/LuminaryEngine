@@ -28,6 +28,7 @@ public class TilemapRenderingSystem : LuminSystem
     public void Draw()
     {
         if (_world.GetCurrentLevelId() < 0) return;
+        if (!_shouldRender) return;
 
         Texture black = _resourceCache.GetTexture("black.png");
 

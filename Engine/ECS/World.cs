@@ -3,6 +3,7 @@ using LuminaryEngine.Engine.Core.GameLoop;
 using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
+using LuminaryEngine.Engine.Core.Rendering.Textures;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.Exceptions;
 using LuminaryEngine.Engine.Gameplay.Combat;
@@ -37,6 +38,8 @@ public class World
     private Renderer _renderer;
     private Game _game;
 
+    private List<Entity> _previouslyEnabledEntities = new List<Entity>();
+    
     public World(LDtkLoadResponse response, Renderer renderer, Game game)
     {
         _ldtkWorld = response.Project;
@@ -213,11 +216,6 @@ public class World
         SwitchLevelInternal(newLevelId, exitLocation, moveToExit);
     }
 
-    public void StartCombat(string combatId)
-    {
-        
-    }
-
     public async void LoadCombatBackdrop(string backdropId, List<Combatant> combatants, Action<List<Combatant>> callback)
     {
         _isTransitioning = true;
@@ -227,10 +225,21 @@ public class World
         
         // Handle Backdrop Loading Logic Here
         _game.TilemapRenderingSystem.ToggleRender();
+        _game.Camera.LockPosition();
+        _game.PlayerMovementSystem.LockMovement();
+        
+        foreach (Entity entityWithComponent in GetEntitiesWithComponents(typeof(SpriteComponent)))
+        {
+            entityWithComponent.GetComponent<SpriteComponent>().IsVisible = false;
+            _previouslyEnabledEntities.Add(entityWithComponent);
+        }
+        
+        Texture backdrop = _game.ResourceCache.GetBackdropTexture(backdropId + ".png");
         _game.InsertRenderCommand("combat_backdrop", new RenderCommand()
         {
-            Texture = _game.ResourceCache.GetBackdropTexture(backdropId + ".png").Handle,
-            ZOrder = -1
+            Type = RenderCommandType.DrawBackdrop,
+            Texture = backdrop.Handle,
+            ZOrder = 0
         });
         
         _renderer.StartFade(false, 2.0f, false);
@@ -250,6 +259,21 @@ public class World
         
         // Handle Backdrop Loading Logic Here
         _game.TilemapRenderingSystem.ToggleRender();
+        _game.Camera.UnlockPosition();
+        _game.PlayerMovementSystem.UnlockMovement();
+        
+        foreach (Entity entityWithComponent in GetEntitiesWithComponents(typeof(SpriteComponent)))
+        {
+            entityWithComponent.GetComponent<SpriteComponent>().IsVisible = false;
+        }
+        
+        foreach (Entity entity in _previouslyEnabledEntities)
+        {
+            entity.GetComponent<SpriteComponent>().IsVisible = true;
+        }
+        
+        _previouslyEnabledEntities.Clear();
+        
         _game.RemoveDrawCommand("combat_backdrop");
         
         _renderer.StartFade(false, 2.0f, false);

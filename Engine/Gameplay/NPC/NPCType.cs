@@ -3,5 +3,6 @@
 public enum NPCType
 {
     Dialogue,
-    ItemGiver
+    ItemGiver,
+    Combatant,
 }

@@ -21,4 +21,7 @@ public class NPCData
     public bool IsRepeatable { get; set; }
     public DialogueNode ErrorDialogue { get; set; }
     public bool HasInteracted { get; set; }
+    
+    // Combatant Specific
+    public string CombatId { get; set; }
 }

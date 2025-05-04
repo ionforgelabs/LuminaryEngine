@@ -280,6 +280,57 @@ namespace LuminaryEngine.ThirdParty.LDtk
                                                     }
 
                                                     break;
+                                                case NPCType.Combatant:
+                                                    string[] diStrings3 =
+                                                        ((IEnumerable)entity.FieldInstances.Find(o =>
+                                                            o.Identifier == "npcDialogue")!.Value).Cast<object>()
+                                                        .Select(x => x.ToString())
+                                                        .ToArray()!;
+
+                                                    List<DialogueNode> dialogue3 = new List<DialogueNode>();
+
+                                                    foreach (var s in diStrings3)
+                                                    {
+                                                        dialogue3.Add(new DialogueNode(s));
+                                                    }
+
+                                                    dialogue3.Reverse();
+
+                                                    for (int i = 0; i < dialogue3.Count - 1; i++)
+                                                    {
+                                                        dialogue3[i + 1].Choices.Add(dialogue3[i]);
+                                                    }
+
+                                                    DialogueNode n3;
+
+                                                    n3 = dialogue3.Count > 1 ? dialogue3[^1] : dialogue3[0];
+                                                    
+                                                    NPCData d2 = new NPCData()
+                                                    {
+                                                        Type = t,
+                                                        Interactive = Convert.ToBoolean(
+                                                            entity.FieldInstances.Find(o =>
+                                                                o.Identifier == "interactive")!.Value),
+                                                        TextureName =
+                                                            (string)entity.FieldInstances.Find(o =>
+                                                                o.Identifier == "textureName")!.Value,
+                                                        Position = new Vector2(entity.PositionPx[0],
+                                                            entity.PositionPx[1]),
+                                                        HasInteracted = false,
+                                                        CombatId =
+                                                            (string)entity.FieldInstances.Find(o =>
+                                                                o.Identifier == "combatId")!.Value,
+                                                        Dialogue = n3
+                                                    };
+                                                    
+                                                    npcs.Add(d2);
+                                                    
+                                                    if (d2.Interactive)
+                                                    {
+                                                        interactables.Add(new Vector2(entity.PositionPx[0],
+                                                            entity.PositionPx[1]));
+                                                    }
+                                                    break;
                                             }
                                         }
 

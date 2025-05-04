@@ -205,6 +205,12 @@ public class PlayerComponent : IComponent
                                         }
 
                                         break;
+                                    case NPCType.Combatant:
+                                        _game.DialogueBox.SetDialogueWithCallback(data.Dialogue, () =>
+                                        {
+                                            _game.CombatSystem.InitializeCombat(data.CombatId);
+                                        });
+                                        break;
                                 }
                             }
 

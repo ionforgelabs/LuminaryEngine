@@ -9,6 +9,7 @@ public class SpriteComponent : IComponent
     public SDL.SDL_Rect? SourceRect { get; set; }
     public int ZIndex { get; set; } = 0;
     public bool IsShifted { get; set; } = true;
+    public bool IsVisible { get; set; } = true;
 
     public SpriteComponent(string textureId)
     {

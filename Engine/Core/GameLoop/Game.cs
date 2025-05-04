@@ -90,6 +90,8 @@ public class Game
             return false;
         }
 
+        SDL.SDL_SetHint("SDL_HINT_RENDER_DRIVER", "opengl");
+
         // Create Window
         _window = SDL_CreateWindow("Luminary Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH,
             DISPLAY_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN);
@@ -310,6 +312,8 @@ public class Game
     {
         ItemManager.Instance.LoadItems();
         SpiritEssenceManager.Instance.LoadSpiritEssence();
+        
+        CombatManager.Instance.LoadCombats();
 
         new CraftingSystem();
 
@@ -403,4 +407,7 @@ public class Game
     public UISystem UISystem => _uiSystem;
     public SaveData SaveData => _saveData;
     public TilemapRenderingSystem TilemapRenderingSystem => _tilemapRenderingSystem;
+    public CombatSystem CombatSystem => _combatSystem;
+    public SpriteRenderingSystem SpriteRenderingSystem => _spriteRenderingSystem;
+    public Camera Camera => _camera;
 }

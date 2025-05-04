@@ -28,6 +28,8 @@ public class SpriteRenderingSystem : LuminSystem
         foreach (var entity in _world.GetEntitiesWithComponents(typeof(SpriteComponent), typeof(TransformComponent)))
         {
             var spriteComponent = entity.GetComponent<SpriteComponent>();
+            if (!spriteComponent.IsVisible) continue;
+            
             SpriteRaisedComponent raisedComponent = null;
             bool isRaised = false;
             if (entity.HasComponent<SpriteRaisedComponent>())
