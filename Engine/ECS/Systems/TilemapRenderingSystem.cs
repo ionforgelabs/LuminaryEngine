@@ -14,6 +14,8 @@ public class TilemapRenderingSystem : LuminSystem
     private Renderer _renderer;
     private ResourceCache _resourceCache;
     private Camera _camera;
+    
+    private bool _shouldRender = true;
 
     public TilemapRenderingSystem(Renderer renderer, ResourceCache resourceCache, Camera camera, World world) :
         base(world)
@@ -99,5 +101,10 @@ public class TilemapRenderingSystem : LuminSystem
     public override void Update()
     {
         // No update logic needed for this system
+    }
+    
+    public void ToggleRender()
+    {
+        _shouldRender = !_shouldRender;
     }
 }

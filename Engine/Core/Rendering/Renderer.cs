@@ -83,7 +83,6 @@ public class Renderer
                     SDL.SDL_SetRenderDrawColor(_renderer, command.ClearR, command.ClearG, command.ClearB,
                         command.ClearA);
                     SDL.SDL_Rect dRect = command.DestRect;
-                    ;
                     SDL.SDL_RenderFillRect(_renderer, ref dRect);
                     break;
                 case RenderCommandType.DrawText:
@@ -97,6 +96,9 @@ public class Renderer
                     break;
                 case RenderCommandType.DrawRectangle:
                     DrawRectangle(command.DestRect, command.RectColor, command.Filled);
+                    break;
+                case RenderCommandType.DrawBackdrop:
+                    DrawBackdrop(command.Texture);
                     break;
             }
         }
@@ -201,6 +203,19 @@ public class Renderer
 
         // Reset the renderer color (optional, depending on your rendering pipeline)
         SDL.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+    }
+    
+    public void DrawBackdrop(IntPtr texture)
+    {
+        SDL.SDL_Rect destRect = new SDL.SDL_Rect()
+        {
+            x = 0,
+            y = 0,
+            w = 640, // Assuming a fixed width for the backdrop
+            h = 360 // Assuming a fixed height for the backdrop
+        };
+
+        SDL.SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref destRect);
     }
 
     public void RenderFade()

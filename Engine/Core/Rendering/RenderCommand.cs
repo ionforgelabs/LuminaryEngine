@@ -2,7 +2,7 @@
 
 namespace LuminaryEngine.Engine.Core.Rendering;
 
-public struct RenderCommand
+public record struct RenderCommand
 {
     public RenderCommandType Type { get; set; }
 
@@ -36,5 +36,6 @@ public enum RenderCommandType
     FadeFrameHold,
     ClearUI,
     DrawText,
-    DrawRectangle
+    DrawRectangle,
+    DrawBackdrop
 }

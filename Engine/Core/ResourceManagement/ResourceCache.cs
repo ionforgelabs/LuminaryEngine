@@ -69,6 +69,22 @@ public class ResourceCache
         _textureCache[textureId] = texture;
         return texture;
     }
+    
+    public Texture GetBackdropTexture(string textureId)
+    {
+        if (_textureCache.ContainsKey(textureId))
+        {
+            return _textureCache[textureId];
+        }
+
+        string texturePath = Path.Combine("Assets", "Backdrops", textureId);
+
+        Texture texture = _textureLoadingSystem.LoadTexture(_renderer, texturePath);
+        texture.AssignTextureId(textureId);
+
+        _textureCache[textureId] = texture;
+        return texture;
+    }
 
     public Texture GetSpritesheet(string spritesheetId)
     {

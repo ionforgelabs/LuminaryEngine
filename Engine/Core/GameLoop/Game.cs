@@ -11,6 +11,7 @@ using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.ECS.Systems;
+using LuminaryEngine.Engine.Gameplay.Combat;
 using LuminaryEngine.Engine.Gameplay.Crafting;
 using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.Items;
@@ -49,6 +50,7 @@ public class Game
     private AnimationSystem _animationSystem;
     private UISystem _uiSystem;
     private DialogueBox _dialogueBox;
+    private CombatSystem _combatSystem;
 
     private Camera _camera;
 
@@ -58,6 +60,8 @@ public class Game
 
     public static readonly int DISPLAY_WIDTH = 640;
     public static readonly int DISPLAY_HEIGHT = 360;
+    
+    private Dictionary<string, RenderCommand> _additionalRenderCommands = new Dictionary<string, RenderCommand>();
 
     public Game()
     {
@@ -150,7 +154,7 @@ public class Game
         LDtkLoadResponse resp = LDtkLoader.LoadProject($"Assets/World/World.ldtk");
 
         // Initialize World
-        _world = new World(resp, _renderer);
+        _world = new World(resp, _renderer, this);
 
         // Initialize Camera
         _camera = new Camera(0, 0, _world);
@@ -163,6 +167,7 @@ public class Game
         _audioSystem = new AudioSystem(_world, _audioManager);
         _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _camera, _world);
         _animationSystem = new AnimationSystem(_world, _gameTime);
+        _combatSystem = new CombatSystem(_world);
 
         // Start the stopwatch
         _stopwatch.Start();
@@ -288,6 +293,12 @@ public class Game
         _spriteRenderingSystem.Draw();
 
         _uiSystem.Render(_renderer);
+        
+        // Render Additional Render Commands
+        foreach (var command in _additionalRenderCommands)
+        {
+            _renderer.EnqueueRenderCommand(command.Value);
+        }
 
         // Render the fade overlay if applicable
         _renderer.RenderFade();
@@ -372,6 +383,16 @@ public class Game
         string title = $"Luminary Engine - FPS: {_frameRate:F0}";
         SDL_SetWindowTitle(_window, title);
     }
+    
+    public void InsertRenderCommand(string commandId, RenderCommand renderCommand)
+    {
+        _additionalRenderCommands.Add(commandId, renderCommand);
+    }
+    
+    public void RemoveDrawCommand(string commandId)
+    {
+        _additionalRenderCommands.Remove(commandId);
+    }
 
     public ResourceCache ResourceCache => _resourceCache;
     public Renderer Renderer => _renderer;
@@ -381,4 +402,5 @@ public class Game
     public DialogueBox DialogueBox => _dialogueBox;
     public UISystem UISystem => _uiSystem;
     public SaveData SaveData => _saveData;
+    public TilemapRenderingSystem TilemapRenderingSystem => _tilemapRenderingSystem;
 }

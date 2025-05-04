@@ -1,9 +1,11 @@
 ﻿using System.Numerics;
+using LuminaryEngine.Engine.Core.GameLoop;
 using LuminaryEngine.Engine.Core.Logging;
 using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
 using LuminaryEngine.Engine.ECS.Components;
 using LuminaryEngine.Engine.Exceptions;
+using LuminaryEngine.Engine.Gameplay.Combat;
 using LuminaryEngine.Engine.Gameplay.Crafting;
 using LuminaryEngine.Engine.Gameplay.NPC;
 using LuminaryEngine.Engine.Gameplay.Player;
@@ -33,8 +35,9 @@ public class World
     private bool _hasFaded = true;
 
     private Renderer _renderer;
+    private Game _game;
 
-    public World(LDtkLoadResponse response, Renderer renderer)
+    public World(LDtkLoadResponse response, Renderer renderer, Game game)
     {
         _ldtkWorld = response.Project;
         _collisionMaps = response.CollisionMaps;
@@ -44,6 +47,7 @@ public class World
         _stationMaps = response.CraftingStationMaps;
 
         _renderer = renderer;
+        _game = game;
     }
 
     public void Update()
@@ -207,6 +211,51 @@ public class World
         }
 
         SwitchLevelInternal(newLevelId, exitLocation, moveToExit);
+    }
+
+    public void StartCombat(string combatId)
+    {
+        
+    }
+
+    public async void LoadCombatBackdrop(string backdropId, List<Combatant> combatants, Action<List<Combatant>> callback)
+    {
+        _isTransitioning = true;
+        _renderer.StartFade(true, 2.0f, true);
+        _hasFaded = false;
+        await TaskEx.WaitUntil(HasFaded);
+        
+        // Handle Backdrop Loading Logic Here
+        _game.TilemapRenderingSystem.ToggleRender();
+        _game.InsertRenderCommand("combat_backdrop", new RenderCommand()
+        {
+            Texture = _game.ResourceCache.GetBackdropTexture(backdropId + ".png").Handle,
+            ZOrder = -1
+        });
+        
+        _renderer.StartFade(false, 2.0f, false);
+        _hasFaded = false;
+        await TaskEx.WaitUntil(HasFaded);
+        _isTransitioning = false;
+        
+        callback(combatants);
+    }
+
+    public async void UnloadCombatBackdrop()
+    {
+        _isTransitioning = true;
+        _renderer.StartFade(true, 2.0f, true);
+        _hasFaded = false;
+        await TaskEx.WaitUntil(HasFaded);
+        
+        // Handle Backdrop Loading Logic Here
+        _game.TilemapRenderingSystem.ToggleRender();
+        _game.RemoveDrawCommand("combat_backdrop");
+        
+        _renderer.StartFade(false, 2.0f, false);
+        _hasFaded = false;
+        await TaskEx.WaitUntil(HasFaded);
+        _isTransitioning = false;
     }
 
     private async void SwitchLevelInternal(int newLevelId, Vector2 exitLocation, bool moveToExit)

@@ -9,7 +9,7 @@ public class CombatState
     public CombatState()
     {
         _combatants = new List<Combatant>();
-        IsActive = true;
+        IsActive = false;
     }
 
     public void AddCombatant(Combatant combatant)

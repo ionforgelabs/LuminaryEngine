@@ -14,6 +14,21 @@ public class CombatSystem : LuminSystem
         _turnQueue = new Queue<Combatant>();
         _combatState = new CombatState();
     }
+    
+    public void InitializeCombat(List<Combatant> combatants)
+    {
+        _world.LoadCombatBackdrop("combat_background", combatants, CombatCallback);
+    }
+
+    private void CombatCallback(List<Combatant> combatants)
+    {
+        foreach (var combatant in combatants)
+        {
+            _combatState.AddCombatant(combatant);
+        }
+        
+        _combatState.IsActive = true;
+    }
 
     public override void Update()
     {
@@ -141,5 +156,6 @@ public class CombatSystem : LuminSystem
     {
         Console.WriteLine("Combat has ended!");
         _combatState.IsActive = false;
+        _world.UnloadCombatBackdrop();
     }
 }
