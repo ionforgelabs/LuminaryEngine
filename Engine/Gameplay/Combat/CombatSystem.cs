@@ -1,5 +1,15 @@
-﻿namespace LuminaryEngine.Engine.Gameplay.Combat;
+﻿using LuminaryEngine.Engine.ECS;
 
-public class CombatSystem
+namespace LuminaryEngine.Engine.Gameplay.Combat;
+
+public class CombatSystem : LuminSystem
 {
+    public CombatSystem(World world) : base(world)
+    {
+    }
+
+    public override void Update()
+    {
+        throw new NotImplementedException();
+    }
 }
