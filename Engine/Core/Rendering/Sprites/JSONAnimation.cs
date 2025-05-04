@@ -13,6 +13,8 @@ public class JSONAnimation
     public float FrameDuration { get; set; }
     [JsonProperty("isLooping")]
     public bool IsLooping { get; set; }
+    [JsonProperty("invertedLooping")]
+    public bool InvertedLooping { get; set; }
 }
 
 public class JSONRect

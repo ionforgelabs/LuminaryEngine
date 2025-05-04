@@ -34,4 +34,6 @@ public class JSONCombatant
     public int SpiritType { get; set; }
     [JsonProperty("textureId")]
     public string TextureId { get; set; }
+    [JsonProperty("hasAnimations")]
+    public bool HasAnimations { get; set; }
 }

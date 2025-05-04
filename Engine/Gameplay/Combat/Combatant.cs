@@ -13,6 +13,7 @@ public class Combatant
     public bool IsPlayer { get; set; }
     
     public string TextureId { get; set; }
+    public bool HasAnimations { get; set; }
 
     public Combatant(string name, int health, int attack, int defense, int speed, SpiritType spiritType, bool isPlayer)
     {
@@ -34,5 +35,6 @@ public class Combatant
         Speed = jsonCombatant.Speed;
         SpiritType = (SpiritType)jsonCombatant.SpiritType;
         TextureId = jsonCombatant.TextureId;
+        HasAnimations = jsonCombatant.HasAnimations;
     }
 }

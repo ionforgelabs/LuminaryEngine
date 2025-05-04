@@ -31,13 +31,41 @@ public class AnimationSystem : LuminSystem
             if (state.ElapsedTime >= animation.FrameDuration)
             {
                 state.ElapsedTime -= animation.FrameDuration;
-                state.CurrentFrame++;
+
+                if (animation.InvertedLooping)
+                {
+                    if(state.CurrentFrame <= 0) 
+                    {
+                        animation.ReturnToStart = false;
+                    }
+                    
+                    if (animation.ReturnToStart)
+                    {
+                        state.CurrentFrame--;
+                    }
+                    else
+                    {
+                        state.CurrentFrame++;
+                    }
+                }
+                else
+                {
+                    state.CurrentFrame++;
+                }
 
                 if (state.CurrentFrame >= animation.Frames.Count)
                 {
                     if (animation.IsLooping)
                     {
-                        state.CurrentFrame = 0;
+                        if (animation.InvertedLooping)
+                        {
+                            animation.ReturnToStart = true;
+                            state.CurrentFrame = animation.Frames.Count - 2;
+                        }
+                        else
+                        {
+                            state.CurrentFrame = 0;
+                        }
                     }
                     else
                     {

@@ -8,13 +8,16 @@ public class Animation
     public List<SDL.SDL_Rect> Frames { get; set; }
     public float FrameDuration { get; set; } // Duration of each frame in seconds
     public bool IsLooping { get; set; }
+    public bool InvertedLooping { get; set; } // If true, the animation will play in reverse after reaching the end
+    public bool ReturnToStart { get; set; } // If true, the animation will return to the start frame after playing
 
-    public Animation(string name, List<SDL.SDL_Rect> frames, float frameDuration, bool isLooping)
+    public Animation(string name, List<SDL.SDL_Rect> frames, float frameDuration, bool isLooping, bool invertedLooping)
     {
         Name = name;
         Frames = frames;
         FrameDuration = frameDuration;
         IsLooping = isLooping;
+        InvertedLooping = invertedLooping;
     }
     
     public Animation(JSONAnimation jsonAnimation) 
@@ -27,5 +30,6 @@ public class Animation
         }
         FrameDuration = jsonAnimation.FrameDuration;
         IsLooping = jsonAnimation.IsLooping;
+        InvertedLooping = jsonAnimation.InvertedLooping;
     }
 }

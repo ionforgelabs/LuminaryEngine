@@ -1,9 +1,15 @@
-﻿using LuminaryEngine.Engine.Core.Rendering;
+﻿using System.Numerics;
+using LuminaryEngine.Engine.Core.GameLoop;
+using LuminaryEngine.Engine.Core.Rendering;
 using LuminaryEngine.Engine.Core.Rendering.Sprites;
+using LuminaryEngine.Engine.Core.ResourceManagement;
 using LuminaryEngine.Engine.ECS;
 using LuminaryEngine.Engine.ECS.Components;
+using LuminaryEngine.Engine.Gameplay.Dialogue;
 using LuminaryEngine.Engine.Gameplay.Player;
+using LuminaryEngine.Extras;
 using Nuke.Common.Utilities;
+using SDL2;
 
 namespace LuminaryEngine.Engine.Gameplay.Combat;
 
@@ -11,13 +17,17 @@ public class CombatSystem : LuminSystem
 {
     private Queue<Entity> _turnQueue;
     private CombatState _combatState;
+
+    private Game _game;
     
     private readonly SpiritTypeSystem _spiritTypeSystem = new SpiritTypeSystem();
 
-    public CombatSystem(World world) : base(world)
+    public CombatSystem(World world, Game game) : base(world)
     {
         _turnQueue = new Queue<Entity>();
         _combatState = new CombatState();
+        
+        _game = game;
     }
     
     public void InitializeCombat(string combatId)
@@ -29,7 +39,7 @@ public class CombatSystem : LuminSystem
         _world.LoadCombatBackdrop(combat.BackgroundTextureId, new List<Combatant>(combat.Combatants) { player }, CombatCallback);
     }
 
-    private void CombatCallback(List<Combatant> combatants)
+    private async void CombatCallback(List<Combatant> combatants)
     {
         foreach (var combatant in combatants)
         {
@@ -37,12 +47,29 @@ public class CombatSystem : LuminSystem
             if (!combatant.TextureId.IsNullOrEmpty())
             {
                 entity.AddComponent(new SpriteComponent(combatant.TextureId, 32));
+                entity.GetComponent<SpriteComponent>().IsShifted = false;
             }
+
+            if (combatant.HasAnimations)
+            {
+                AnimationResponse response = _game.ResourceCache.GetAnimation(combatant.TextureId.Split(".")[0]);
+                entity.AddComponent(new AnimationComponent());
+                entity.GetComponent<AnimationComponent>().AddAnimations(response.Animations);
+                entity.GetComponent<AnimationComponent>().PlayAnimation("Idle");
+            }
+            
             entity.AddComponent(new CombatantComponent(combatant));
-            entity.AddComponent(new TransformComponent(100, 100));
+            entity.AddComponent(new TransformComponent(180, 40));
+            
+            entity.GetComponent<TransformComponent>().Scale = new Vector2(3, 3);
             
             _combatState.AddCombatant(entity);
         }
+
+        DialogueNode node = new DialogueNode("Warning! A frenzied " + combatants[0].Name + " has appeared!");
+        _game.DialogueBox.SetDialogue(node);
+
+        await TaskEx.WaitUntil(() => !_game.DialogueBox.IsVisible);
         
         _combatState.IsActive = true;
     }

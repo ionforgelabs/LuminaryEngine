@@ -169,7 +169,7 @@ public class Game
         _audioSystem = new AudioSystem(_world, _audioManager);
         _tilemapRenderingSystem = new TilemapRenderingSystem(_renderer, _resourceCache, _camera, _world);
         _animationSystem = new AnimationSystem(_world, _gameTime);
-        _combatSystem = new CombatSystem(_world);
+        _combatSystem = new CombatSystem(_world, this);
 
         // Start the stopwatch
         _stopwatch.Start();
