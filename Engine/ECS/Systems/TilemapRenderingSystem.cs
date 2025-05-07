@@ -45,9 +45,9 @@ public class TilemapRenderingSystem : LuminSystem
             foreach (var tile in layer.GridTiles)
             {
                 // Get the texture for the tile
-                Texture texture =
-                    _resourceCache.GetSpritesheet(
-                        layer.TilesetRelPath.Split('/')[layer.TilesetRelPath.Split('/').Length - 1]);
+                string textureId = layer.TilesetRelPath[(layer.TilesetRelPath.LastIndexOf('/') + 1)..];
+                Texture texture = _resourceCache.GetSpritesheet(textureId);
+                textureId = null!;
                 if (texture == null)
                 {
                     throw new UnknownTextureException($"Failed to load texture: {layer.TilesetUid}");

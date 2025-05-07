@@ -84,9 +84,21 @@ public class CraftingSystem
         if (recipe.Result.IsSpiritEssence)
         {
             SpiritEssence essence = SpiritEssenceManager.Instance.GetSpiritEssence(recipe.Result.ResultItemID).Clone();
-            essence.PropertyMultipliers = new Dictionary<string, float>(essence.PropertyMultipliers);
+            if (essence.PropertyMultipliers == null)
+            {
+                essence.PropertyMultipliers = null;
+            }
+            else
+            {
+                essence.PropertyMultipliers = new Dictionary<string, float>(essence.PropertyMultipliers);
+            }
             if (recipe.RequiredSpiritEssences.Count > 0)
             {
+                if (essence.PropertyMultipliers == null)
+                {
+                    essence.PropertyMultipliers = new Dictionary<string, float>();
+                }
+                
                 foreach (var recipeRequiredSpiritEssence in recipe.RequiredSpiritEssences)
                 {
                     if (essence.PropertyMultipliers.ContainsKey(recipeRequiredSpiritEssence.Key))
@@ -109,11 +121,23 @@ public class CraftingSystem
                 item.Flags |= ItemFlags.IsCrafted;
             }
             item.Flags.CopyFlags((ItemFlags)recipe.Result.Flags);
-            
-            item.Stats = new Dictionary<string, float>(item.Stats);
+
+            if (item.Stats == null)
+            {
+                item.Stats = null;
+            }
+            else
+            {
+                item.Stats = new Dictionary<string, float>(item.Stats);
+            }
             
             if (recipe.RequiredItems.Count > 0)
             {
+                if (item.Stats == null)
+                {
+                    item.Stats = new Dictionary<string, float>();
+                }
+                
                 foreach (var recipeRequiredItem in recipe.RequiredItems)
                 {
                     if (item.Stats.ContainsKey(recipeRequiredItem.Key))

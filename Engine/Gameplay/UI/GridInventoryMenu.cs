@@ -99,6 +99,7 @@ public class GridInventoryMenu : MenuSystem
                 foreach (var item in _inventory.GetInventory())
                 {
                     // Create an icon for the item (placeholder image)
+                    LuminLog.Debug("GridInventoryMenu " +  $"Item: {item.Key.Name}, Amount: {item.Value}");
                     var itemIcon = new ImageComponent(
                         _resourceCache.GetTexture(item.Key.TextureId), // Replace with actual texture path
                         currentX, currentY, CellWidth, CellHeight, zIndex: _zIndex - 2

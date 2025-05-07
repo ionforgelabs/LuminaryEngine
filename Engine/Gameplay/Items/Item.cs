@@ -13,8 +13,23 @@ public class Item
     public ItemFlags Flags { get; set; }
     public Dictionary<string, float> Stats { get; set; }
     
-    public Item Clone() 
+    public Item Clone()
     {
+        if (Stats == null)
+        {
+            return new Item
+            {
+                Name = Name,
+                Description = Description,
+                TextureId = TextureId,
+                IsEquipped = IsEquipped,
+                ItemId = ItemId,
+                Type = Type,
+                Flags = Flags,
+                Stats = null
+            };
+        }
+
         return new Item
         {
             Name = Name,

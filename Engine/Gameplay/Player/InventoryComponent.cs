@@ -21,6 +21,8 @@ public class InventoryComponent : IComponent
         {
             return;
         }
+        
+        LuminLog.Debug($"Adding item '{item.Name}' to inventory.");
 
         if (_items.ContainsKey(item))
         {
@@ -72,8 +74,7 @@ public class InventoryComponent : IComponent
     
     public bool HasItem(string itemId, int quantity = 1)
     {
-        var item = ItemManager.Instance.GetItem(itemId);
-        return item != null && HasItem(item, quantity);
+        return _items.Any(o => o.Key.ItemId == itemId && o.Value >= quantity);
     }
 
     public int GetItemCount(Item item)
@@ -152,8 +153,7 @@ public class InventoryComponent : IComponent
     
     public bool HasSpiritEssence(string essenceId, int quantity = 1)
     {
-        var essence = SpiritEssenceManager.Instance.GetSpiritEssence(essenceId);
-        return essence != null && HasSpiritEssence(essence, quantity);
+        return _spiritEssences.Any(o => o.Key.EssenceID == essenceId && o.Value >= quantity);
     }
 
     public int GetSpiritEssenceCount(SpiritEssence essence)

@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using LuminaryEngine.Engine.Core.GameLoop;
 using LuminaryEngine.Engine.ECS;
+using LuminaryEngine.ThirdParty.LDtk.Models;
 
 namespace LuminaryEngine.Engine.Core.Rendering;
 
@@ -31,26 +32,28 @@ public class Camera
             return;
         }
 
+        LDtkLevel level = _world.GetCurrentLevel();
+        
         // Center the camera on the target immediately.
         Vector2 desiredPosition = target - new Vector2(Game.DISPLAY_WIDTH * 0.5f, Game.DISPLAY_HEIGHT * 0.5f);
         int clampedX, clampedY;
-        if (_world.GetCurrentLevel().PixelWidth - Game.DISPLAY_WIDTH < 0)
+        if (level.PixelWidth - Game.DISPLAY_WIDTH < 0)
         {
-            clampedX = -((Game.DISPLAY_WIDTH - _world.GetCurrentLevel().PixelWidth) / 2);
+            clampedX = -((Game.DISPLAY_WIDTH - level.PixelWidth) / 2);
         }
         else
         {
-            clampedX = (int)Math.Clamp(desiredPosition.X, 0, _world.GetCurrentLevel().PixelWidth - Game.DISPLAY_WIDTH);
+            clampedX = (int)Math.Clamp(desiredPosition.X, 0, level.PixelWidth - Game.DISPLAY_WIDTH);
         }
 
-        if (_world.GetCurrentLevel().PixelHeight - Game.DISPLAY_HEIGHT < 0)
+        if (level.PixelHeight - Game.DISPLAY_HEIGHT < 0)
         {
-            clampedY = -((Game.DISPLAY_HEIGHT - _world.GetCurrentLevel().PixelHeight) / 2);
+            clampedY = -((Game.DISPLAY_HEIGHT - level.PixelHeight) / 2);
         }
         else
         {
             clampedY = (int)Math.Clamp(desiredPosition.Y, 0,
-                _world.GetCurrentLevel().PixelHeight - Game.DISPLAY_HEIGHT);
+                level.PixelHeight - Game.DISPLAY_HEIGHT);
         }
 
         X = clampedX;

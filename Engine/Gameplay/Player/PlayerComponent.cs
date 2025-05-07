@@ -66,22 +66,22 @@ public class PlayerComponent : IComponent
                                                 DialogueNode node = data.Dialogue;
                                             if (data.IsSpiritEssence)
                                             {
+                                                SpiritEssence newEssence = SpiritEssenceManager.Instance.GetSpiritEssence(data.ItemId).Clone();
+                                                newEssence.PropertyMultipliers = data.ItemStats;
                                                 _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
                                                     .GetComponent<InventoryComponent>()
-                                                    .AddSpiritEssence(new SpiritEssence() { EssenceID = data.ItemId, PropertyMultipliers = data.ItemStats }, data.ItemAmount);
-                                                
-                                                SpiritEssence e = SpiritEssenceManager.Instance.GetSpiritEssence(data.ItemId);
+                                                    .AddSpiritEssence(newEssence, data.ItemAmount);
                                                 
                                                 if (node.Choices == null)
                                                 {
                                                     node.Choices = new List<DialogueNode>();
                                                     node.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {e.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newEssence.Name}"));
                                                 }
                                                 else if (node.Choices.Count == 0)
                                                 {
                                                     node.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {e.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newEssence.Name}"));
                                                 }
                                                 else
                                                 {
@@ -92,27 +92,28 @@ public class PlayerComponent : IComponent
                                                     }
 
                                                     nodeNew.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {e.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newEssence.Name}"));
                                                 }
                                             }
                                             else
                                             {
+                                                Item newItem = ItemManager.Instance.GetItem(data.ItemId).Clone();
+                                                newItem.Stats = data.ItemStats;
+                                                newItem.Flags = data.ItemFlags;
                                                 _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
                                                     .GetComponent<InventoryComponent>()
-                                                    .AddItem(new Item() { ItemId = data.ItemId, Flags = data.ItemFlags, Stats = data.ItemStats }, data.ItemAmount);
-                                                
-                                                Item i = ItemManager.Instance.GetItem(data.ItemId);
+                                                    .AddItem(newItem, data.ItemAmount);
                                                 
                                                 if (node.Choices == null)
                                                 {
                                                     node.Choices = new List<DialogueNode>();
                                                     node.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {i.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newItem.Name}"));
                                                 }
                                                 else if (node.Choices.Count == 0)
                                                 {
                                                     node.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {i.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newItem.Name}"));
                                                 }
                                                 else
                                                 {
@@ -123,7 +124,7 @@ public class PlayerComponent : IComponent
                                                     }
 
                                                     nodeNew.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {i.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newItem.Name}"));
                                                 }
                                             }
 
@@ -139,22 +140,22 @@ public class PlayerComponent : IComponent
                                             DialogueNode node = data.Dialogue;
                                             if (data.IsSpiritEssence)
                                             {
+                                                SpiritEssence newEssence = SpiritEssenceManager.Instance.GetSpiritEssence(data.ItemId).Clone();
+                                                newEssence.PropertyMultipliers = data.ItemStats;
                                                 _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
                                                     .GetComponent<InventoryComponent>()
-                                                    .AddSpiritEssence(new SpiritEssence() { EssenceID = data.ItemId, PropertyMultipliers = data.ItemStats }, data.ItemAmount);
-                                                
-                                                SpiritEssence e = SpiritEssenceManager.Instance.GetSpiritEssence(data.ItemId);
+                                                    .AddSpiritEssence(newEssence, data.ItemAmount);
                                                 
                                                 if (node.Choices == null)
                                                 {
                                                     node.Choices = new List<DialogueNode>();
                                                     node.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {e.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newEssence.Name}"));
                                                 }
                                                 else if (node.Choices.Count == 0)
                                                 {
                                                     node.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {e.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newEssence.Name}"));
                                                 }
                                                 else
                                                 {
@@ -165,27 +166,28 @@ public class PlayerComponent : IComponent
                                                     }
 
                                                     nodeNew.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {e.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newEssence.Name}"));
                                                 }
                                             }
                                             else
                                             {
+                                                Item newItem = ItemManager.Instance.GetItem(data.ItemId).Clone();
+                                                newItem.Stats = data.ItemStats;
+                                                newItem.Flags = data.ItemFlags;
                                                 _game.World.GetEntitiesWithComponents(typeof(PlayerComponent))[0]
                                                     .GetComponent<InventoryComponent>()
-                                                    .AddItem(new Item() { ItemId = data.ItemId, Flags = data.ItemFlags, Stats = data.ItemStats }, data.ItemAmount);
-                                                
-                                                Item i = ItemManager.Instance.GetItem(data.ItemId);
+                                                    .AddItem(newItem, data.ItemAmount);
                                                 
                                                 if (node.Choices == null)
                                                 {
                                                     node.Choices = new List<DialogueNode>();
                                                     node.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {i.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newItem.Name}"));
                                                 }
                                                 else if (node.Choices.Count == 0)
                                                 {
                                                     node.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {i.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newItem.Name}"));
                                                 }
                                                 else
                                                 {
@@ -196,7 +198,7 @@ public class PlayerComponent : IComponent
                                                     }
 
                                                     nodeNew.Choices.Add(
-                                                        new DialogueNode($"You received {data.ItemAmount}x {i.Name}"));
+                                                        new DialogueNode($"You received {data.ItemAmount}x {newItem.Name}"));
                                                 }
                                             }
 
